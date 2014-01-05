@@ -1,4 +1,5 @@
-package main
+// Package aggregation contains the GalleryAggregator for Google+ event pictures.
+package aggregation
 
 import (
     "encoding/base64"
@@ -13,6 +14,9 @@ import (
     "github.com/sourcegraph/webloop"
     "code.google.com/p/goauth2/oauth"
     "code.google.com/p/google-api-go-client/taskqueue/v1beta2"
+
+    "socialvibes/model"
+    "socialvibes/config"
 )
 
 // The GalleryAggregator takes a Google+ event ID, 
@@ -44,10 +48,10 @@ func GalleryAggregator(eventId string) {
     }
 
     // Parse all event picture URLs from the response document
-    var pictures []picture
+    var pictures []model.Picture
     document.Find(".Bea.VLb").Each(func(i int, s *goquery.Selection) {
             picUrl, _ := s.Attr("src")
-            pictures = append(pictures, picture{picUrl})
+            pictures = append(pictures, model.Picture{picUrl})
     })
 
     // Request current API Access Token
@@ -57,12 +61,12 @@ func GalleryAggregator(eventId string) {
     }
     defer authResp.Body.Close()
     authDecoder := json.NewDecoder(authResp.Body)
-    authData := new(authorizationResponse)
+    authData := new(model.AuthorizationResponse)
     authDecoder.Decode(&authData)
     
     // Create a new authorized API client
     transport := &oauth.Transport{
-            Config: OAuthConfig,
+            Config: config.OAuthConfig,
             Token: &oauth.Token{
                     AccessToken: authData.Access_token,
             },

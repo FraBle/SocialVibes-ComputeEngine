@@ -1,4 +1,6 @@
-package main
+// Package config allows to parse a TOML config file.
+// It houses the OAuth configuration for Google API access.
+package config
 
 import (
 	"code.google.com/p/goauth2/oauth"
@@ -24,7 +26,7 @@ var (
 
 // ReadConfig parses a given TOML file and fills variables with the given information (mostly API secrets).
 func ReadConfig() {
-	config.Parse("../src/socialvibes/socialvibes.toml")
+	config.Parse("../src/socialvibes/config/socialvibes.toml")
 	OAuthConfig.ClientId = *GoogleClientID
 	OAuthConfig.ClientSecret = *GoogleClientSecret
 }

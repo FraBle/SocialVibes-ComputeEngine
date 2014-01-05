@@ -1,4 +1,7 @@
-package main
+// Package rpc includes the RPC service method for pulling tasks from the Google App Engine Task Queue.
+// It's used to communicate between Compute Engine and App Engine.
+// It's based on github.com/gorilla/rpc
+package rpc
 
 import (
 	"net/http"
@@ -7,6 +10,10 @@ import (
 
 	"code.google.com/p/google-api-go-client/taskqueue/v1beta2"
 	"code.google.com/p/goauth2/oauth"
+
+	"socialvibes/aggregation"
+	"socialvibes/model"
+	"socialvibes/config"
 )
 
 // EventArgs represents the parameter of the PullTask RPC service method.
@@ -47,12 +54,12 @@ func PullTasks(r *http.Request, pullType, eventId string) {
     }
     defer authResp.Body.Close()
     authDecoder := json.NewDecoder(authResp.Body)
-    authData := new(authorizationResponse)
+    authData := new(model.AuthorizationResponse)
     authDecoder.Decode(&authData)
 
     // Create a new authorized API client
     transport := &oauth.Transport{
-        Config: OAuthConfig,
+        Config: config.OAuthConfig,
         Token: &oauth.Token{
             AccessToken: authData.Access_token,
         },
@@ -78,7 +85,7 @@ func PullTasks(r *http.Request, pullType, eventId string) {
 
 	// We now found all tasks associated to the given event id.
 	// Therefore we can now aggregate the pictures, send them to the app engine and distribute to the clients
-	go GalleryAggregator(eventId)
+	go aggregation.GalleryAggregator(eventId)
 
 	// Delete all found tasks
 	for _, tmptask := range tasks {
