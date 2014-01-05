@@ -25,7 +25,7 @@ You can select one of the public events you've created with your Google+ account
 - You need Google Go (http://golang.org/doc/install) with all environment variables set
 - You need Task Queues set up (see https://github.com/FraBle/SocialVibes-AppEngine#how-to-set-it-up)
 - Checkout the repository
-- You need a socialvibes.toml file under socialvibes/socialvibes.toml, e.g.:
+- You need a socialvibes.toml file under socialvibes/config/socialvibes.toml, e.g.:
 
 ```toml
 [taskqueue]
